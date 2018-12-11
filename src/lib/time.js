@@ -79,9 +79,87 @@ function getKstLambdaDate() {
     return kstTime;
 }
 
+// convert ecoaTime to standard JS Date object
+// 24시인 경우 23시 기준 JS Date를 구한 후 다시 1시간을 더하여 JS Date를 만든다
+// 실제 시간이 2018년 1월 1일 0시일 때, EcoaTime은 2017123124 로 표현된다
+function ecoaTimeToJsDate(time) {
+    if (time == 0) {
+        // time is 0 when misebig failed to connect to internet
+        // just return current time
+        const now = new Date()
+        return new Date(
+            now.getFullYear(), 
+            now.getMonth(),
+            now.getDate(),
+            now.getHours()
+        )
+    }
+
+    const hour = time.substr(8,2)
+    let now = null;
+
+    if (hour === '24') {
+        //console.log(`hour is 24`)
+        now = new Date(time.substr(0, 4),   // Year
+                    time.substr(4, 2)-1,    // Month
+                    time.substr(6, 2),      // Date
+                    '23',                   // Hour
+                    time.substr(10, 2))
+        now = new Date(now.getTime() + 3600*1000)
+    } else {
+        //console.log(`hour is not 24`)
+        now = new Date(time.substr(0, 4), 
+                    time.substr(4, 2)-1,
+                    time.substr(6, 2),
+                    time.substr(8, 2),
+                    time.substr(10, 2))
+    }
+
+    return now;
+}
+
+// Type 1: 4/23(월) 19:00 에서 분을 항상 00 으로 함
+// Type 2: 4/23(월) 19:23 분까지 표시함
+// Type 3: 4/23(월) 19시 로 시간까지만 표시함
+// Type 4: 4/23(월) 19시 발표(18시 측정) 기준
+function dateToUserFriendly(date, type) {
+    const krDays = ['(일)', '(월)', '(화)', '(수)', '(목)', '(금)', '(토)'];
+
+    //console.log(`time.dateToUserFriendly(): date: `, date.toString())
+
+    let timeStr = (date.getMonth() + 1) + '/' + date.getDate() + 
+                krDays[date.getDay()] + ' ' +
+                date.getHours() ; 
+        
+    const min = date.getMinutes()
+
+    switch (type) {
+    case 1:
+        timeStr += ':00'
+        break;
+    case 2:
+        timeStr += ':' + (min < 10 ? '0' + min : min)
+        break;
+    case 3:
+        timeStr += '시'
+        break;
+    case 4:
+        const measureTime = new Date(date.getTime() - 1000*3600)
+        const hour = measureTime.getHours()
+        timeStr += '시 발표 기준 (' + hour + '시 측정)';
+        break;
+    default:
+
+    }
+                
+    return timeStr;
+}
+
 module.exports = {
     getEcoaTime,
     getEcoaTime2,
     toEcoaTime,
-    getKstLambdaDate
+    getKstLambdaDate,
+    dateToUserFriendly,
+    ecoaTimeToJsDate,
 }
