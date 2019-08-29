@@ -122,37 +122,68 @@ function ecoaTimeToJsDate(time) {
 // Type 2: 4/23(월) 19:23 분까지 표시함
 // Type 3: 4/23(월) 19시 로 시간까지만 표시함
 // Type 4: 4/23(월) 19시 발표(18시 측정) 기준
+// Type 5: 2019년 4/23(월)
+// Type 6: 2019년 4/23(월) 17시 발표
+// Type 7: 2019.4.23(월) 07:00
+// Type 8: 2019.4.23(Mon) 07:00 English version of type 7
+// Type 9: 2019.4.23(Mon) 08:00 UTC time
 function dateToUserFriendly(date, type) {
     const krDays = ['(일)', '(월)', '(화)', '(수)', '(목)', '(금)', '(토)'];
+    const enDays = ['(Sun)', '(Mon)', '(Tue)', '(Wed)', '(Thu)', '(Fri)', '(Sun)'];
 
     //console.log(`time.dateToUserFriendly(): date: `, date.toString())
 
-    let timeStr = (date.getMonth() + 1) + '/' + date.getDate() + 
-                krDays[date.getDay()] + ' ' +
-                date.getHours() ; 
+    let finalDateStr = '';
+    let monthDateDayStr = (date.getMonth() + 1) + '/' + date.getDate() + krDays[date.getDay()];
+    const hour = date.getHours()
+    const twoDigitHour = hour < 10 ? '0' + hour : hour;
+    let hourStr = hour.toString() 
         
     const min = date.getMinutes()
 
     switch (type) {
     case 1:
-        timeStr += ':00'
+        finalDateStr = monthDateDayStr + ' ' + hourStr + ':00'
         break;
     case 2:
-        timeStr += ':' + (min < 10 ? '0' + min : min)
+        finalDateStr = monthDateDayStr + ' ' + hourStr + ':' + (min < 10 ? '0' + min : min)
         break;
     case 3:
-        timeStr += '시'
+        finalDateStr = monthDateDayStr + ' ' + hourStr + '시'
         break;
     case 4:
         const measureTime = new Date(date.getTime() - 1000*3600)
         const hour = measureTime.getHours()
-        timeStr += '시 발표 기준 (' + hour + '시 측정)';
+        finalDateStr = monthDateDayStr + ' ' +  hourStr + '시 발표 (' + hour + '시 측정)';
         break;
+    case 5:
+        finalDateStr = date.getFullYear() + '년' + ' ' + monthDateDayStr;
+        break;
+    case 6:
+        finalDateStr = date.getFullYear() + '년' + ' ' + monthDateDayStr + ' ' +  hourStr + '시 발표';
+        break;
+    case 7:
+        finalDateStr = date.getFullYear() + '.' + 
+                      (date.getMonth() + 1) + '.' + 
+                       date.getDate() + krDays[date.getDay()] + ' ' +
+                       twoDigitHour + ':00';
+    case 8:
+        finalDateStr = date.getFullYear() + '.' + 
+                      (date.getMonth() + 1) + '.' + 
+                       date.getDate() + enDays[date.getDay()] + ' ' +
+                       twoDigitHour + ':00';
+    case 9:
+        const utcHour = date.getUTCHours()
+        const finalUtcHour = utcHour < 10 ? '0' + utcHour : utcHour;
+        finalDateStr = date.getUTCFullYear() + '.' + 
+                      (date.getUTCMonth() + 1) + '.' + 
+                       date.getUTCDate() + enDays[date.getUTCDay()] + ' ' +
+                       finalUtcHour + ':00';             
     default:
 
     }
                 
-    return timeStr;
+    return finalDateStr;
 }
 
 module.exports = {
