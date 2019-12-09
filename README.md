@@ -39,6 +39,8 @@ Javascript Date를 읽기 좋은 문자열 형태로 변환한다. type 에 따�
   - `2019.4.23(Mon) 07:00`
 - 9: UTC Time으로 표시
   - `2019.4.23(Mon) 08:00`
+- 10: 시간:분 표시. 단 분은 항상 00.
+  - `19:00`
 
 ## `ecoaTimeToJsDate(ecoaTime)`
 ecoaTime 문자열 형식 시간을 Javascript Date 객체로 변환한다.

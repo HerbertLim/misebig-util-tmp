@@ -127,6 +127,7 @@ function ecoaTimeToJsDate(time) {
 // Type 7: 2019.4.23(월) 07:00
 // Type 8: 2019.4.23(Mon) 07:00 English version of type 7
 // Type 9: 2019.4.23(Mon) 08:00 UTC time
+// Type 10: 19:00 
 function dateToUserFriendly(date, type) {
     const krDays = ['(일)', '(월)', '(화)', '(수)', '(목)', '(금)', '(토)'];
     const enDays = ['(Sun)', '(Mon)', '(Tue)', '(Wed)', '(Thu)', '(Fri)', '(Sun)'];
@@ -181,7 +182,10 @@ function dateToUserFriendly(date, type) {
                       (date.getUTCMonth() + 1) + '.' + 
                        date.getUTCDate() + enDays[date.getUTCDay()] + ' ' +
                        finalUtcHour + ':00';     
-        break;        
+        break;  
+    case 10: 
+        finalDateStr = hourStr + ':00';
+        break;      
     default:
 
     }
