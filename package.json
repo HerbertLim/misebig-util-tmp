@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {},
   "dependencies": {
-    "d3-scale": "^2.1.2",
+    "d3-scale": "^4.0.2",
     "lodash": "^4.17.19"
   }
 }
